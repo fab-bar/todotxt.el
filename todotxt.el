@@ -497,19 +497,19 @@ removed."
   (let ((priority (read-from-minibuffer "Priority: ")))
     (if (or (and (string-match "[A-Z]" priority) (equal (length priority) 1))
             (equal priority ""))
-        (save-excursion
-          (setq inhibit-read-only 't)
-          (if (todotxt-get-priority (todotxt-get-current-line-as-string))
-              (progn
-                (beginning-of-line)
-                (delete-char 4)))
-          (if (not (equal priority ""))
-              (progn
-                (beginning-of-line)
-                (insert (concat "(" (upcase priority) ") "))
-                (setq inhibit-read-only nil)))
-          (todotxt-prioritize 'todotxt-get-due-priority-sort-key)
-          (if todotxt-save-after-change (save-buffer)))
+      (save-excursion
+        (setq inhibit-read-only 't)
+        (if (todotxt-get-priority (todotxt-get-current-line-as-string))
+            (progn
+              (beginning-of-line)
+              (delete-char 4)))
+        (if (not (equal priority ""))
+            (progn
+              (beginning-of-line)
+              (insert (concat "(" (upcase priority) ") "))
+              (setq inhibit-read-only nil)))
+        (todotxt-prioritize 'todotxt-get-due-priority-sort-key)
+        (if todotxt-save-after-change (save-buffer)))
       (error "%s is not a valid priority.  Try a letter between A and Z." priority))))
 
 (defun todotxt-edit-item ()
