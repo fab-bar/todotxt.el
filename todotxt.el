@@ -457,10 +457,15 @@ the file, saving afterwards."
   (interactive "sItem to add: ")
   (setq inhibit-read-only 't)
   (goto-char (point-max))
-  (insert (concat
-           (if todotxt-use-creation-dates
-               (concat (todotxt-get-formatted-date) " "))
-           item "\n"))
+  (if (not (equal 0 (current-column))) (insert "\n"))
+  (let ((priority (if (todotxt-get-priority item)
+                     (substring item 0 4)))
+        (itemtext (replace-regexp-in-string "\\(([A-Z])\\) " "" item)))
+    (insert (concat
+             priority
+             (if todotxt-use-creation-dates
+                 (concat (todotxt-get-formatted-date) " "))
+             itemtext "\n")))
   (todotxt-prioritize 'todotxt-get-due-priority-sort-key)
   (if todotxt-save-after-change (save-buffer))
   (setq inhibit-read-only nil)
@@ -471,19 +476,7 @@ the file, saving afterwards."
 list and append it to the file, saving afterwards."
   (interactive "sItem to add: ")
   (with-current-buffer (find-file-noselect todotxt-file)
-    (goto-char (point-max))
-    (if (not (equal 0 (current-column))) (insert "\n"))
-    (setq priority
-          (if (todotxt-get-priority item)
-              (substring item 0 4)))
-    (setq item (replace-regexp-in-string "\\(([A-Z])\\) " "" item))
-    (insert (concat
-             priority
-             (if todotxt-use-creation-dates
-                 (concat
-                  (todotxt-get-formatted-date) " "))
-             item "\n"))
-    (save-buffer)
+    (todotxt-add-item item)
     (message (concat "Todo inserted at the end of " todotxt-file))))
 
 (defun todotxt-add-priority ()
