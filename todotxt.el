@@ -371,7 +371,7 @@ format."
 
 (defun todotxt-get-variable (str variable)
   "Reads the provided string for the specified variable"
-  (let* ((var-regexp (concat variable todotxt-variable-regexp))
+  (let* ((var-regexp (concat "\s" variable todotxt-variable-regexp))
          (match-start (string-match var-regexp str))
          (data (match-data))
          (value-start (nth 2 data))
