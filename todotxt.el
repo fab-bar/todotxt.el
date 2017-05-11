@@ -458,18 +458,19 @@ the file, saving afterwards."
   (setq inhibit-read-only 't)
   (goto-char (point-max))
   (if (not (equal 0 (current-column))) (insert "\n"))
-  (let ((priority (if (todotxt-get-priority item)
+  (let* ((priority (if (todotxt-get-priority item)
                      (substring item 0 4)))
-        (itemtext (replace-regexp-in-string "\\(([A-Z])\\) " "" item)))
-    (insert (concat
-             priority
-             (if todotxt-use-creation-dates
-                 (concat (todotxt-get-formatted-date) " "))
-             itemtext "\n")))
+        (itemtext (replace-regexp-in-string "\\(([A-Z])\\) " "" item))
+        (fullitemtext (concat
+                       priority
+                       (if todotxt-use-creation-dates
+                           (concat (todotxt-get-formatted-date) " "))
+                       itemtext)))
+    (insert (concat fullitemtext "\n"))
   (todotxt-prioritize 'todotxt-get-due-priority-sort-key)
   (if todotxt-save-after-change (save-buffer))
   (setq inhibit-read-only nil)
-  (todotxt-jump-to-item item))
+  (todotxt-jump-to-item fullitemtext)))
 
 (defun todotxt-add-item-any-buffer (item)
   "From any other buffer, prompt for an item to add to the todo
