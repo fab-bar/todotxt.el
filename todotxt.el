@@ -641,31 +641,35 @@ accordance with the spec, this also adds a completion date to
 completed items, and removes it if the item is being change to a
 'not completed' state."
   (interactive)
-  (setq inhibit-read-only 't)
-  (if (todotxt-complete-p)
-      (progn
-        (beginning-of-line)
-        (delete-char 2)
-        (save-excursion
+  ;; only toggle state if point is not on a hidden line
+  (if (save-excursion (progn (beginning-of-line) (invisible-p (point))))
+      (message "Point is on a hidden TODO item")
+    (progn
+      (setq inhibit-read-only 't)
+      (if (todotxt-complete-p)
+        (progn
+          (beginning-of-line)
+          (delete-char 2)
+          (save-excursion
           (if (re-search-forward
                "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]"
                (+ (point) 11))
               (progn
                 (beginning-of-line)
                 (delete-char 11)))))
-    (progn
-      (beginning-of-line)
-      ; This isn't in the spec, but the CLI version removes priorities
-      ; upon completion.  It's problematic, because there's no good
-      ; way to put them back if you toggle completion back to "not
-      ; done".
-      (if (todotxt-get-priority (todotxt-get-current-line-as-string))
+        (progn
+          (beginning-of-line)
+          ; This isn't in the spec, but the CLI version removes priorities
+          ; upon completion.  It's problematic, because there's no good
+          ; way to put them back if you toggle completion back to "not
+          ; done".
+          (if (todotxt-get-priority (todotxt-get-current-line-as-string))
               (delete-char 4))
-      (insert (concat "x " (todotxt-get-formatted-date) " "))
-      (beginning-of-line)))
-  (todotxt-prioritize 'todotxt-get-due-priority-sort-key)
-  (setq inhibit-read-only nil)
-  (if todotxt-save-after-change (save-buffer)))
+          (insert (concat "x " (todotxt-get-formatted-date) " "))
+          (beginning-of-line)))
+      (todotxt-prioritize 'todotxt-get-due-priority-sort-key)
+      (setq inhibit-read-only nil)
+      (if todotxt-save-after-change (save-buffer)))))
 
 (provide 'todotxt)
 
